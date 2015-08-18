@@ -1,0 +1,64 @@
+diff -Naur xen/Config.mk xen-a/Config.mk
+--- xen/Config.mk	2014-06-27 21:02:32.773333333 -0600
++++ xen-a/Config.mk	2014-07-02 10:11:58.650000497 -0600
+@@ -230,12 +230,12 @@
+ SEABIOS_UPSTREAM_URL ?= http://xenbits.xen.org/git-http/seabios.git
+ else
+ OVMF_UPSTREAM_URL ?= git://xenbits.xen.org/ovmf.git
+-QEMU_UPSTREAM_URL ?= git://xenbits.xen.org/qemu-upstream-unstable.git
+-SEABIOS_UPSTREAM_URL ?= git://xenbits.xen.org/seabios.git
++QEMU_UPSTREAM_URL ?= git://git.qemu.org/qemu.git
++SEABIOS_UPSTREAM_URL ?= git://git.seabios.org/seabios.git
+ endif
+ OVMF_UPSTREAM_REVISION ?= 447d264115c476142f884af0be287622cd244423
+ QEMU_UPSTREAM_REVISION ?= master
+-SEABIOS_UPSTREAM_TAG ?= rel-1.7.4
++SEABIOS_UPSTREAM_TAG ?= master
+ # Sun Dec 22 10:42:26 2013 -0500
+ # coreboot: Make sure to print the SeaBIOS version in cbmem debug output.
+ 
+diff -Naur xen/tools/Makefile xen-a/tools/Makefile
+--- xen/tools/Makefile	2014-06-27 21:02:32.806666666 -0600
++++ xen-a/tools/Makefile	2014-07-02 10:11:58.650000497 -0600
+@@ -185,7 +185,7 @@
+ 		source=.; \
+ 	fi; \
+ 	cd qemu-xen-dir; \
+-	$$source/configure --enable-xen --target-list=i386-softmmu \
++	$$source/configure --enable-xen --target-list=i386-softmmu,x86_64-softmmu \
+ 		$(QEMU_XEN_ENABLE_DEBUG) \
+ 		--prefix=$(PREFIX)/lib/xen \
+ 		--libdir=$(PREFIX)/lib/xen/lib \
+@@ -203,6 +203,20 @@
+ 		--datadir=$(SHAREDIR)/qemu-xen \
+ 		--localstatedir=/var \
+ 		--disable-kvm \
++		--disable-werror \
++                --enable-spice \
++                --enable-usb-redir \
++                --enable-guest-agent \
++                --enable-sdl \
++		--enable-xen-pci-passthrough \
++		--enable-bluez \
++		--enable-vhost-net \
++		--enable-vde \
++                --enable-linux-aio \
++                --enable-smartcard-nss \
++                --enable-libiscsi \
++                --audio-drv-list=alsa,sdl \
++                --disable-docs \
+ 		--disable-docs \
+ 		--disable-guest-agent \
+ 		--python=$(PYTHON) \
+diff -Naur xen/tools/libxl/libxl_dm.c xen-a/tools/libxl/libxl_dm.c
+--- xen/tools/libxl/libxl_dm.c	2014-06-27 21:02:32.873333333 -0600
++++ xen-a/tools/libxl/libxl_dm.c	2014-07-02 10:11:58.650000497 -0600
+@@ -38,7 +38,7 @@
+ #ifdef QEMU_XEN_PATH
+     return QEMU_XEN_PATH;
+ #else
+-    return libxl__abs_path(gc, "qemu-system-i386", libxl__libexec_path());
++    return libxl__abs_path(gc, "qemu-system-x86_64", libxl__libexec_path());
+ #endif
+ }
+ 
